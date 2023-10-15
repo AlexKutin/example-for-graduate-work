@@ -16,7 +16,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "user_id")
-    private User author;
+    private AdUser author;
 
     @Column(name = "comment_text")
     private String commentText;
@@ -40,11 +40,11 @@ public class Comment {
         this.ad = ad;
     }
 
-    public User getAuthor() {
+    public AdUser getAuthor() {
         return author;
     }
 
-    public void setAuthor(User author) {
+    public void setAuthor(AdUser author) {
         this.author = author;
     }
 

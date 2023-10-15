@@ -5,7 +5,7 @@ import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CommentsDTO;
 import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.model.Comment;
-import ru.skypro.homework.model.User;
+import ru.skypro.homework.model.AdUser;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,7 +25,7 @@ public class CommentMapper {
         this.userService = userService;
     }
 
-    public static CommentDTO toCommentDTO(Comment comment) {
+    public CommentDTO toCommentDTO(Comment comment) {
         CommentDTO commentDTO = new CommentDTO();
 
         commentDTO.setPk(comment.getCommentId());
@@ -46,19 +46,19 @@ public class CommentMapper {
         comment.setCreatedAt(LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(commentDTO.getCreatedAt()), TimeZone.getDefault().toZoneId()));
 
-        Ad ad = adService.getADById(commentDTO.getAuthor());
+        Ad ad = adService.getAdById(commentDTO.getAuthor());
         comment.setAd(ad);
 
-        User author = userService.getUserById(commentDTO.getAuthor());
+        AdUser author = userService.getUserById(commentDTO.getAuthor());
         comment.setAuthor(author);
 
         return comment;
     }
 
-    public static CommentsDTO toCommentsDTO(List<Comment> comments) {
+    public CommentsDTO toCommentsDTO(List<Comment> comments) {
         CommentsDTO commentsDTO = new CommentsDTO();
         commentsDTO.setCount(comments.size());
-        commentsDTO.setResults(comments.stream().map(CommentMapper::toCommentDTO).collect(Collectors.toList()));
+        commentsDTO.setResults(comments.stream().map(this::toCommentDTO).collect(Collectors.toList()));
 
         return commentsDTO;
     }
