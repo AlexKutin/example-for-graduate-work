@@ -1,13 +1,18 @@
 package ru.skypro.homework.model;
 
-import ru.skypro.homework.dto.Role;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import ru.skypro.homework.dto.RoleDTO;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class AdUser {
+public class AdUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -22,24 +27,18 @@ public class AdUser {
     @Column(name = "phone", nullable = false, length = 30)
     private String phone;
 
-    @Column(name = "username", nullable = false, length = 100)
+    @Column(name = "user_name", nullable = false, length = 100)
     private String username;
 
     @Column(name = "avatar_path")
     private String avatarFilePath;
 
-    @Column(name = "avatar_size")
-    private Integer avatarFileSize;
-
-    @Column(name = "avatar_type")
-    private String avatarMediaType;
-
     @Column(name = "pwd_hash", nullable = false)
-    private String passwordHash;
+    private String password;
 
     @Column(name = "user_role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private RoleDTO role;
 
     public Integer getUserId() {
         return userId;
@@ -73,20 +72,54 @@ public class AdUser {
         this.phone = phone;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
+    }
+
+    public RoleDTO getRole() {
+        return role;
+    }
+
+    public void setRole(RoleDTO role) {
+        this.role = role;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getUsername() {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
     }
 
     public String getAvatarFilePath() {
@@ -97,41 +130,17 @@ public class AdUser {
         this.avatarFilePath = avatarFilePath;
     }
 
-    public Integer getAvatarFileSize() {
-        return avatarFileSize;
-    }
-
-    public void setAvatarFileSize(Integer avatarFileSize) {
-        this.avatarFileSize = avatarFileSize;
-    }
-
-    public String getAvatarMediaType() {
-        return avatarMediaType;
-    }
-
-    public void setAvatarMediaType(String avatarMediaType) {
-        this.avatarMediaType = avatarMediaType;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AdUser adUser = (AdUser) o;
-        return Objects.equals(userId, adUser.userId) && Objects.equals(firstName, adUser.firstName) && Objects.equals(lastName, adUser.lastName) && Objects.equals(phone, adUser.phone) && Objects.equals(username, adUser.username) && Objects.equals(passwordHash, adUser.passwordHash) && role == adUser.role;
+        return Objects.equals(userId, adUser.userId) && Objects.equals(firstName, adUser.firstName) && Objects.equals(lastName, adUser.lastName) && Objects.equals(phone, adUser.phone) && Objects.equals(username, adUser.username) && Objects.equals(password, adUser.password) && role == adUser.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, firstName, lastName, phone, username, passwordHash, role);
+        return Objects.hash(userId, firstName, lastName, phone, username, password, role);
     }
 
     @Override
@@ -142,8 +151,8 @@ public class AdUser {
                 ", lastName='" + lastName + '\'' +
                 ", phone='" + phone + '\'' +
                 ", username='" + username + '\'' +
-                ", passwordHash='" + passwordHash + '\'' +
-                ", role=" + role +
+                ", passwordHash='" + password + '\'' +
+                ", role=" + role.name() +
                 '}';
     }
 }

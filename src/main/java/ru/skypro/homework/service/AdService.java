@@ -10,15 +10,17 @@ import ru.skypro.homework.model.Ad;
 public interface AdService {
     Ad getAdById(Integer adId);
 
+    boolean isAdPresent(Integer adId);
+
     AdsDTO getAllAdsByMe(Authentication authentication);
 
     AdsDTO getAllAds();
 
     ExtendedAdDTO getExtendedAdInfo(Integer adId);
 
-    void removeAd(Integer adId);
-
-    AdDTO updateAd(Integer adId, CreateOrUpdateAdDTO updateAdDTO);
+    void removeAd(Integer adId, Authentication authentication);
 
     AdDTO addAd(CreateOrUpdateAdDTO createAdDTO, Authentication authentication);
+
+    AdDTO updateAd(Integer adId, CreateOrUpdateAdDTO updateAdDTO, Authentication authentication);
 }

@@ -14,7 +14,7 @@ public class UserDTO {
     @Pattern(regexp = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}")
     private String phone;
 
-    private Role role;
+    private RoleDTO role;
 
     public int getId() {
         return id;
@@ -56,11 +56,11 @@ public class UserDTO {
         this.phone = phone;
     }
 
-    public Role getRole() {
+    public RoleDTO getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(RoleDTO role) {
         this.role = role;
     }
 }

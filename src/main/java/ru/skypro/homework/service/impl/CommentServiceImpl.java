@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.CommentDTO;
@@ -20,8 +21,8 @@ import java.util.List;
 
 @Service
 public class CommentServiceImpl implements CommentService {
-    private static final String COMMENT_NOT_FOUND_BY_AD_MSG = "Комментарии для объявления с id: %d не найдены в БД";
     private static final String COMMENT_NOT_FOUND_BY_ID_MSG = "Комментарий с id: %d не найден в БД";
+    private static final String COMMENT_NOT_FOUND_BY_AD_ID_MSG = "Комментарий с id: %d не найден в БД для объявления с id: %d";
     private final CommentRepository commentRepository;
     private final AdService adService;
     private final UserService userService;
@@ -35,16 +36,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentsDTO getCommentsByAdId(Integer adId) {
+    public CommentsDTO getCommentsByAdId(int adId) {
         List<Comment> comments = commentRepository.findCommentsByAd_AdId(adId);
-        if (comments.isEmpty()) {
-            throw new CommentNotFoundException(String.format(COMMENT_NOT_FOUND_BY_AD_MSG, adId));
-        }
         return commentMapper.toCommentsDTO(comments);
     }
 
     @Override
-    public CommentDTO addCommentToAd(Integer adId, CreateOrUpdateCommentDTO createCommentDTO, Authentication authentication) {
+    public CommentDTO addCommentToAd(int adId, CreateOrUpdateCommentDTO createCommentDTO, Authentication authentication) {
         Ad ad = adService.getAdById(adId);
         AdUser author = userService.getCurrentUser(authentication);
 
@@ -53,29 +51,38 @@ public class CommentServiceImpl implements CommentService {
         comment.setAd(ad);
         comment.setAuthor(author);
         comment.setCreatedAt(LocalDateTime.now());
+        comment = commentRepository.save(comment);
 
         return commentMapper.toCommentDTO(comment);
     }
 
     @Override
-    public void deleteComment(Integer adId, Integer commentId) {
-        Ad ad = adService.getAdById(adId);
-        Comment comment = getCommentById(commentId);
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @securityService.isOwnerComment(authentication, #commentId)")
+    public void deleteComment(int adId, int commentId, Authentication authentication) {
+        Comment comment = checkCommentPresent(adId, commentId);
         commentRepository.delete(comment);
     }
 
     @Override
-    public Comment getCommentById(Integer commentId) {
+    public Comment getCommentById(int commentId) {
         return commentRepository.findById(commentId).orElseThrow(() ->
                 new CommentNotFoundException(String.format(COMMENT_NOT_FOUND_BY_ID_MSG, commentId)));
     }
 
     @Override
-    public CommentDTO updateComment(Integer adId, Integer commentId, CreateOrUpdateCommentDTO updateCommentDTO) {
-        Ad ad = adService.getAdById(adId);
-        Comment comment = getCommentById(commentId);
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @securityService.isOwnerComment(authentication, #commentId)")
+    public CommentDTO updateComment(int adId, int commentId, CreateOrUpdateCommentDTO updateCommentDTO, Authentication authentication) {
+        Comment comment = checkCommentPresent(adId, commentId);
         comment.setCommentText(updateCommentDTO.getText());
         comment = commentRepository.save(comment);
         return commentMapper.toCommentDTO(comment);
+    }
+
+    private Comment checkCommentPresent(int adId, int commentId) {
+        Comment comment = getCommentById(commentId);
+        if (!adService.isAdPresent(adId) || comment.getAd().getAdId() != adId) {
+            throw new CommentNotFoundException(String.format(COMMENT_NOT_FOUND_BY_AD_ID_MSG, commentId, adId));
+        }
+        return comment;
     }
 }

@@ -3,6 +3,7 @@ package ru.skypro.homework.controller;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -37,17 +38,18 @@ public class CommentsController {
 
     @DeleteMapping("/ads/{adId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable(name = "adId") int adId,
-                                              @PathVariable(name = "commentId") int commentId) {
-        commentService.deleteComment(adId, commentId);
-        return ResponseEntity.ok().build();
+                                              @PathVariable(name = "commentId") int commentId,
+                                              Authentication authentication) {
+        commentService.deleteComment(adId, commentId, authentication);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/ads/{adId}/comments/{commentId}")
     public ResponseEntity<CommentDTO> updateComment(@PathVariable(name = "adId") int adId,
                                                     @PathVariable(name = "commentId") int commentId,
-                                                    @Valid @RequestBody CreateOrUpdateCommentDTO updateCommentDTO) {
-
-        return ResponseEntity.ok(commentService.updateComment(adId, commentId, updateCommentDTO));
+                                                    @Valid @RequestBody CreateOrUpdateCommentDTO updateCommentDTO,
+                                                    Authentication authentication) {
+        return ResponseEntity.ok(commentService.updateComment(adId, commentId, updateCommentDTO, authentication));
     }
 
     @ExceptionHandler

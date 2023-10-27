@@ -25,5 +25,5 @@ public class RegisterDTO {
     private String phone;
 
     @NotNull
-    private Role role;
+    private RoleDTO role;
 }
