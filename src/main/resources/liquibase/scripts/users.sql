@@ -15,3 +15,6 @@ CREATE TABLE users
     pwd_hash VARCHAR(32) NOT NULL,
     user_role VARCHAR(10) NOT NULL
 );
+
+-- changeset AlexeyKutin:2
+ALTER TABLE users RENAME COLUMN email to username;

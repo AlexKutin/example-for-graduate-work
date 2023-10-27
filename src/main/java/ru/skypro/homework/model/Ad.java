@@ -11,7 +11,7 @@ public class Ad {
 
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "user_id")
-    private User author;
+    private AdUser author;
 
     @Column(name = "ad_price", nullable = false)
     private Integer price;
@@ -33,11 +33,11 @@ public class Ad {
         this.adId = adId;
     }
 
-    public User getAuthor() {
+    public AdUser getAuthor() {
         return author;
     }
 
-    public void setAuthor(User author) {
+    public void setAuthor(AdUser author) {
         this.author = author;
     }
 

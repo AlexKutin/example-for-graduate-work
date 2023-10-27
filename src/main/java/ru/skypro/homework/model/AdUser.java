@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class AdUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -22,8 +22,8 @@ public class User {
     @Column(name = "phone", nullable = false, length = 30)
     private String phone;
 
-    @Column(name = "email", nullable = false, length = 100)
-    private String email;
+    @Column(name = "username", nullable = false, length = 100)
+    private String username;
 
     @Column(name = "avatar_path")
     private String avatarFilePath;
@@ -73,12 +73,12 @@ public class User {
         this.phone = phone;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPasswordHash() {
@@ -125,13 +125,13 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(userId, user.userId) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(phone, user.phone) && Objects.equals(email, user.email) && Objects.equals(passwordHash, user.passwordHash) && role == user.role;
+        AdUser adUser = (AdUser) o;
+        return Objects.equals(userId, adUser.userId) && Objects.equals(firstName, adUser.firstName) && Objects.equals(lastName, adUser.lastName) && Objects.equals(phone, adUser.phone) && Objects.equals(username, adUser.username) && Objects.equals(passwordHash, adUser.passwordHash) && role == adUser.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, firstName, lastName, phone, email, passwordHash, role);
+        return Objects.hash(userId, firstName, lastName, phone, username, passwordHash, role);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", phone='" + phone + '\'' +
-                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
                 ", passwordHash='" + passwordHash + '\'' +
                 ", role=" + role +
                 '}';
