@@ -26,7 +26,7 @@ public class AdsController {
 
     private final AdService adService;
 
-    @GetMapping(" /ads")
+    @GetMapping("/ads")
     public ResponseEntity<AdsDTO> getAllAds() {
         return ResponseEntity.ok(adService.getAllAds());
     }
@@ -45,15 +45,16 @@ public class AdsController {
     }
 
     @DeleteMapping("/ads/{id}")
-    public ResponseEntity<Void> removeAd(@PathVariable(name = "id") int id) {
-        adService.removeAd(id);
+    public ResponseEntity<Void> removeAd(@PathVariable(name = "id") int id, Authentication authentication) {
+        adService.removeAd(id, authentication);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/ads/{id}")
     public ResponseEntity<AdDTO> updateAds(@PathVariable(name = "id") int adId,
-                                           @Valid @RequestBody CreateOrUpdateAdDTO updateAdDTO) {
-        return ResponseEntity.ok(adService.updateAd(adId, updateAdDTO));
+                                           @Valid @RequestBody CreateOrUpdateAdDTO updateAdDTO,
+                                           Authentication authentication) {
+        return ResponseEntity.ok(adService.updateAd(adId, updateAdDTO, authentication));
     }
 
     @GetMapping("/ads/me")

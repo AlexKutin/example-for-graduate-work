@@ -1,12 +1,21 @@
 package ru.skypro.homework.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import ru.skypro.homework.dto.RegisterDTO;
 import ru.skypro.homework.dto.UpdateUserDTO;
 import ru.skypro.homework.dto.UserDTO;
 import ru.skypro.homework.model.AdUser;
 
+@Service
 public class UserMapper {
+    private final PasswordEncoder encoder;
 
-    public static UserDTO toUserDTO(AdUser adUser) {
+    public UserMapper(PasswordEncoder encoder) {
+        this.encoder = encoder;
+    }
+
+    public UserDTO toUserDTO(AdUser adUser) {
         UserDTO userDTO = new UserDTO();
 
         userDTO.setId(adUser.getUserId());
@@ -19,20 +28,20 @@ public class UserMapper {
         return userDTO;
     }
 
-    public static AdUser fromUserDTO(UserDTO userDTO) {
+    public AdUser fromRegisterDTO(RegisterDTO registerDTO) {
         AdUser adUser = new AdUser();
 
-        adUser.setUserId(userDTO.getId());
-        adUser.setUsername(userDTO.getEmail());
-        adUser.setFirstName(userDTO.getFirstName());
-        adUser.setLastName(userDTO.getLastName());
-        adUser.setPhone(userDTO.getPhone());
-        adUser.setRole(userDTO.getRole());
+        adUser.setUsername(registerDTO.getUsername());
+        adUser.setFirstName(registerDTO.getFirstName());
+        adUser.setLastName(registerDTO.getLastName());
+        adUser.setPhone(registerDTO.getPhone());
+        adUser.setRole(registerDTO.getRole());
+        adUser.setPassword(encoder.encode(registerDTO.getPassword()));
 
         return adUser;
     }
 
-    public static UpdateUserDTO toUpdateUserDTO(AdUser adUser) {
+    public UpdateUserDTO toUpdateUserDTO(AdUser adUser) {
         UpdateUserDTO updateUserDTO = new UpdateUserDTO();
 
         updateUserDTO.setFirstName(adUser.getFirstName());
@@ -42,7 +51,7 @@ public class UserMapper {
         return updateUserDTO;
     }
 
-    public static AdUser updateUserFromDTO(AdUser adUser, UpdateUserDTO updateUserDTO) {
+    public AdUser updateUserFromDTO(AdUser adUser, UpdateUserDTO updateUserDTO) {
         adUser.setFirstName(updateUserDTO.getFirstName());
         adUser.setLastName(updateUserDTO.getLastName());
         adUser.setPhone(updateUserDTO.getPhone());
