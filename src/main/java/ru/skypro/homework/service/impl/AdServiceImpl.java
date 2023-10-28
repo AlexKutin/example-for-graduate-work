@@ -38,7 +38,7 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public boolean isAdPresent(Integer adId) {
-        return adRepository.isAdPresentById(adId);
+        return adRepository.existsById(adId);
     }
 
     @Override
@@ -75,14 +75,14 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @securityService.isOwnerAd(authentication, #adId)")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isOwnerAd(authentication, #adId)")
     public void removeAd(Integer adId, Authentication authentication) {
         Ad ad = getAdById(adId);
         adRepository.delete(ad);
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @securityService.isOwnerAd(authentication, #adId)")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isOwnerAd(authentication, #adId)")
     public AdDTO updateAd(Integer adId, CreateOrUpdateAdDTO updateAdDTO, Authentication authentication) {
         Ad ad = getAdById(adId);
         ad.setTitle(updateAdDTO.getTitle());

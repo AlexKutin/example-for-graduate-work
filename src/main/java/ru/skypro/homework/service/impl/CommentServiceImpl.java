@@ -57,7 +57,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @securityService.isOwnerComment(authentication, #commentId)")
+    @PreAuthorize("hasRole('ROLE') or @securityService.isOwnerComment(authentication, #commentId)")
     public void deleteComment(int adId, int commentId, Authentication authentication) {
         Comment comment = checkCommentPresent(adId, commentId);
         commentRepository.delete(comment);
@@ -70,7 +70,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @securityService.isOwnerComment(authentication, #commentId)")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isOwnerComment(authentication, #commentId)")
     public CommentDTO updateComment(int adId, int commentId, CreateOrUpdateCommentDTO updateCommentDTO, Authentication authentication) {
         Comment comment = checkCommentPresent(adId, commentId);
         comment.setCommentText(updateCommentDTO.getText());

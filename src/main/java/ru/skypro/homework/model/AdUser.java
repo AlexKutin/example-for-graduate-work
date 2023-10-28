@@ -3,7 +3,7 @@ package ru.skypro.homework.model;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.skypro.homework.dto.RoleDTO;
+import ru.skypro.homework.dto.Role;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -38,7 +38,7 @@ public class AdUser implements UserDetails {
 
     @Column(name = "user_role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private RoleDTO role;
+    private Role role;
 
     public Integer getUserId() {
         return userId;
@@ -77,11 +77,11 @@ public class AdUser implements UserDetails {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
-    public RoleDTO getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(RoleDTO role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
