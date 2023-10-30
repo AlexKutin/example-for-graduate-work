@@ -14,3 +14,6 @@ CREATE TABLE IF NOT EXISTS users
     pwd_hash VARCHAR(64) NOT NULL,
     user_role VARCHAR(10) NOT NULL
 );
+
+-- changeset AlexeyKutin:2
+ALTER TABLE users DROP COLUMN IF EXISTS avatar_size, DROP COLUMN IF EXISTS avatar_type;

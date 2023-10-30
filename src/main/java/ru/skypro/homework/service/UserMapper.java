@@ -1,5 +1,6 @@
 package ru.skypro.homework.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.RegisterDTO;
@@ -9,6 +10,8 @@ import ru.skypro.homework.model.AdUser;
 
 @Service
 public class UserMapper {
+    @Value("${path.to.user.avatar.file.url}")
+    private String avatarFileURL;
     private final PasswordEncoder encoder;
 
     public UserMapper(PasswordEncoder encoder) {
@@ -24,6 +27,7 @@ public class UserMapper {
         userDTO.setLastName(adUser.getLastName());
         userDTO.setPhone(adUser.getPhone());
         userDTO.setRole(adUser.getRole());
+        userDTO.setImage(avatarFileURL);
 
         return userDTO;
     }
