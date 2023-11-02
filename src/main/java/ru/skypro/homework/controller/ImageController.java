@@ -36,7 +36,7 @@ public class ImageController {
     }
 
     @GetMapping(value = "/photo/{id}")
-    public ResponseEntity<InputStreamResource> getAvatarPhoto(@PathVariable(name = "id") Integer adId) throws IOException {
+    public ResponseEntity<InputStreamResource> getAdPhoto(@PathVariable(name = "id") Integer adId) throws IOException {
         Ad ad = adService.getAdById(adId);
         File file = fileService.getPhotoByAd(ad);
         return getResponseEntityForFile(file);
