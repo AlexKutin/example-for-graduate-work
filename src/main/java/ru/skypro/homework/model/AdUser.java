@@ -31,7 +31,7 @@ public class AdUser implements UserDetails {
     private String username;
 
     @Column(name = "avatar_path")
-    private String avatarFilePath;
+    private String avatarFileName;
 
     @Column(name = "pwd_hash", nullable = false)
     private String password;
@@ -122,12 +122,12 @@ public class AdUser implements UserDetails {
         this.username = username;
     }
 
-    public String getAvatarFilePath() {
-        return avatarFilePath;
+    public String getAvatarFileName() {
+        return avatarFileName;
     }
 
-    public void setAvatarFilePath(String avatarFilePath) {
-        this.avatarFilePath = avatarFilePath;
+    public void setAvatarFileName(String avatarFilePath) {
+        this.avatarFileName = avatarFilePath;
     }
 
     @Override
@@ -145,13 +145,14 @@ public class AdUser implements UserDetails {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "AdUser{" +
                 "userId=" + userId +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", phone='" + phone + '\'' +
                 ", username='" + username + '\'' +
-                ", passwordHash='" + password + '\'' +
+                ", avatarFileName='" + avatarFileName + '\'' +
+                ", password='" + password + '\'' +
                 ", role=" + role.name() +
                 '}';
     }

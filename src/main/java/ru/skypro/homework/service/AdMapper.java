@@ -1,5 +1,6 @@
 package ru.skypro.homework.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.AdDTO;
 import ru.skypro.homework.dto.AdsDTO;
@@ -11,6 +12,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class AdMapper {
+    @Value("${path.to.ad.photo.file.url}")
+    private String adPhotoFileURL;
 
     public AdDTO toAdDTO(Ad ad) {
         AdDTO adDTO = new AdDTO();
@@ -19,7 +22,7 @@ public class AdMapper {
         adDTO.setAuthor(ad.getAuthor().getUserId());
         adDTO.setTitle(ad.getTitle());
         adDTO.setPrice(ad.getPrice());
-        adDTO.setImage(ad.getImage());
+        adDTO.setImage(adPhotoFileURL + "/" + ad.getAdId());
 
         return adDTO;
     }
@@ -33,7 +36,7 @@ public class AdMapper {
         extendedAdDTO.setTitle(ad.getTitle());
         extendedAdDTO.setDescription(ad.getDescription());
         extendedAdDTO.setEmail(ad.getAuthor().getUsername());
-        extendedAdDTO.setImage(ad.getImage());
+        extendedAdDTO.setImage(adPhotoFileURL + "/" + ad.getAdId());
         extendedAdDTO.setPhone(ad.getAuthor().getPhone());
         extendedAdDTO.setPrice(ad.getPrice());
 

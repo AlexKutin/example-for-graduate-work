@@ -14,9 +14,12 @@ import ru.skypro.homework.dto.AdsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
 import ru.skypro.homework.dto.ExtendedAdDTO;
 import ru.skypro.homework.exception.AdNotFoundException;
+import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.service.AdService;
+import ru.skypro.homework.service.FileService;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
@@ -25,6 +28,7 @@ public class AdsController {
     private final Logger logger = LoggerFactory.getLogger(AdsController.class);
 
     private final AdService adService;
+    private final FileService fileService;
 
     @GetMapping("/ads")
     public ResponseEntity<AdsDTO> getAllAds() {
@@ -34,8 +38,8 @@ public class AdsController {
     @PostMapping(value = "/ads", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdDTO> addAd(@Valid @RequestPart("properties") CreateOrUpdateAdDTO createAdDTO,
                                        @RequestPart("image") MultipartFile multipartFile,
-                                       Authentication authentication)  {
-        AdDTO adDTO = adService.addAd(createAdDTO, authentication);
+                                       Authentication authentication) throws IOException {
+        AdDTO adDTO = adService.addAd(createAdDTO, multipartFile, authentication);
         return ResponseEntity.ok(adDTO);
     }
 
@@ -63,8 +67,14 @@ public class AdsController {
     }
 
     @PatchMapping(value = "/ads/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateImage(@PathVariable(name = "id") int id,
-                                            @RequestPart("image") MultipartFile multipartFile) {
+    public ResponseEntity<Void> updateImage(@PathVariable(name = "id") int adId,
+                                            @RequestPart("image") MultipartFile multipartFile,
+                                            Authentication authentication) throws IOException {
+        Ad ad = adService.getAdById(adId);
+        if (!authentication.getName().equals(ad.getAuthor().getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        fileService.updateAdPhoto(ad, multipartFile);
         return ResponseEntity.ok().build();
     }
 

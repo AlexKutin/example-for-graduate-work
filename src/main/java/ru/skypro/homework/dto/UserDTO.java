@@ -16,6 +16,8 @@ public class UserDTO {
 
     private Role role;
 
+    private String image;
+
     public int getId() {
         return id;
     }
@@ -62,5 +64,13 @@ public class UserDTO {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

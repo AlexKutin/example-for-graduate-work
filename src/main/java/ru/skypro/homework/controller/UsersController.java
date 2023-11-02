@@ -12,9 +12,11 @@ import ru.skypro.homework.dto.NewPasswordDTO;
 import ru.skypro.homework.dto.UpdateUserDTO;
 import ru.skypro.homework.dto.UserDTO;
 import ru.skypro.homework.exception.UserNotFoundException;
+import ru.skypro.homework.service.FileService;
 import ru.skypro.homework.service.UserService;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
@@ -22,6 +24,7 @@ import javax.validation.Valid;
 public class UsersController {
     private final Logger logger = LoggerFactory.getLogger(UsersController.class);
     private final UserService userService;
+    private final FileService fileService;
 
     @PostMapping("/users/set_password")
     public ResponseEntity<Void> setPassword(@Valid @RequestBody NewPasswordDTO newPasswordDTO,
@@ -42,7 +45,9 @@ public class UsersController {
     }
 
     @PatchMapping(value = "/users/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateUserImage(@RequestPart("image") MultipartFile multipartFile) {
+    public ResponseEntity<Void> updateUserImage(@RequestPart("image") MultipartFile multipartFile,
+                                                Authentication authentication) throws IOException {
+        fileService.updateCurrentUserAvatar(authentication, multipartFile);
         return ResponseEntity.ok().build();
     }
 
