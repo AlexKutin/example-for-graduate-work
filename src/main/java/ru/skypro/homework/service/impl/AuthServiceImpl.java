@@ -23,6 +23,13 @@ public class AuthServiceImpl implements AuthService {
         this.userMapper = userMapper;
     }
 
+    /**
+     * Производит проверку логина/пароля пользователя на соответствие данным, хранящимся в БД
+     * @param userName уникальное имя, логин пользователя (его email), предоставляет фронтенд
+     * @param password пароль пользователя, предоставляет фронтенд
+     * @return true - если пароль, переданный в параметре password соответствует закодированному паролю, хранящемуся в БД
+     * @throws UsernameNotFoundException - если пользователь с указанным userName не найден в БД
+     */
     @Override
     public boolean login(String userName, String password) {
         try {
@@ -33,6 +40,13 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    /**
+     * Создает нового пользователя в соответствии с переданными параметрами и сохраняет его в БД.
+     * Если пользователь с указанным логином уже существует, то создание не происходит, возвращает false
+     * @param registerDTO - объект класса RegisterDTO, содержащий регистрационную информацию о новом пользователе,
+     *                    предоставляет фронтенд
+     * @return true - если пользователь был успешно зарегистрирован и сохранен в БД
+     */
     @Override
     public boolean register(RegisterDTO registerDTO) {
         if (userService.userExists(registerDTO.getUsername())) {

@@ -35,6 +35,13 @@ public class FileService {
         this.adRepository = adRepository;
     }
 
+    /**
+     * Обновляет фото профиля (аватар) текущего авторизованного пользователя из параметра file.
+     * Производит сохранение информации в БД и нового фото на жесткий диск
+     * @param authentication объект типа Authentication, текущий авторизованный пользователь, предоставляет фронтенд
+     * @param file графический файл с фото профиля (аватаром) пользователя
+     * @throws IOException - если не удалось сохранить на диске файл с фото профиля (аватар) пользователя
+     */
     public void updateCurrentUserAvatar(Authentication authentication, MultipartFile file) throws IOException {
         AdUser user = userService.getCurrentUser(authentication);
         String avatarFileName = saveFileToDisk(file, avatarFilePath, "avatar_" + user.getUserId());
@@ -42,21 +49,42 @@ public class FileService {
         adUserRepository.save(user);
     }
 
+    /**
+     * Возвращает фото профиля (аватар) текущего авторизованного пользователя в виде объекта класса File
+     * @param authentication объект типа Authentication, текущий авторизованный пользователь, предоставляет фронтенд
+     * @return объект класса File
+     */
     public File getAvatarFileByCurrentUser(Authentication authentication) {
         AdUser adUser = userService.getCurrentUser(authentication);
         return getFileByPathAndImageName(this.avatarFilePath, adUser.getAvatarFileName());
     }
 
-    public File getAvatarFileByUSerId(Integer userId) {
+    /**
+     * Возвращает фото профиля (аватар) для пользователя с идентификатором userId в виде объекта класса File
+     * @param userId идентификатор пользователя
+     * @return объект класса File
+     */
+    public File getAvatarFileByUserId(Integer userId) {
         AdUser adUser = userService.getUserById(userId);
         return getFileByPathAndImageName(this.avatarFilePath, adUser.getAvatarFileName());
     }
 
+    /**
+     * Возвращает картинку объявления в виде объекта класса File
+     * @param ad объявление в виде объекта класса Ad
+     * @return объект класса File
+     */
     public File getPhotoByAd(Ad ad) {
         String photoName = ad.getImage();
         return getFileByPathAndImageName(this.photoFilePath, photoName);
     }
 
+    /**
+     * Конструирует полный путь из переданных параметров и возвращает объект класса File
+     * @param dirPath каталог на диске, в котором находятся графические файлы
+     * @param imageName имя файла
+     * @return объект класса File
+     */
     public File getFileByPathAndImageName(String dirPath, String imageName) {
         if (imageName == null) {
             return null;
@@ -65,12 +93,27 @@ public class FileService {
         return imagePath.toFile();
     }
 
+    /**
+     * Обновляет фото в объявлении, производит сохранение информации в БД и нового фото на жесткий диск
+     * @param ad объявление, объект класса Ad
+     * @param file графический файл с картинкой (фото) объявления
+     * @throws IOException - если не удалось сохранить на диске файл с фото объявления
+     */
     public void updateAdPhoto(Ad ad, MultipartFile file) throws IOException {
         String photoFileName = saveFileToDisk(file, photoFilePath, "photo_" + ad.getAdId());
         ad.setImage(photoFileName);
         adRepository.save(ad);
     }
 
+    /**
+     * Сохраняет на диск графический файл с картинкой, указанный в параметре file.
+     * Сохранение производится в каталог dirPath под именем, указанном в параметре fileName
+     * @param file графический файл с картинкой
+     * @param dirPath путь к каталогу на диске для сохранения файла
+     * @param fileName имя файла, под которым он будет записан на диск
+     * @return имя файла, под которым файл был сохранен на диск
+     * @throws IOException - если не удалось сохранить на диске файл
+     */
     public String saveFileToDisk(MultipartFile file, String dirPath, String fileName) throws IOException {
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
         Path filePath = Path.of(dirPath, fileName + "." + fileExtension);
