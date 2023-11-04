@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDTO;
@@ -53,6 +54,12 @@ public class UsersController {
 
     @ExceptionHandler
     ResponseEntity<?> handleUserNotFound(UserNotFoundException e) {
+        logger.error(e.getMessage());
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler
+    ResponseEntity<?> handleUsernameNotFound(UsernameNotFoundException e) {
         logger.error(e.getMessage());
         return ResponseEntity.notFound().build();
     }

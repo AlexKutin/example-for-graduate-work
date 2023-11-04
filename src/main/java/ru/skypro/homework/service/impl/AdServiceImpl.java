@@ -40,16 +40,35 @@ public class AdServiceImpl implements AdService {
         this.fileService = fileService;
     }
 
+    /**
+     * Возвращает объявление из БД по его уникальному идентификатору
+     * @param adId идентификатор объявления
+     * @return Объявление в виде объекта класса Ad
+     * @throws AdNotFoundException - если объявление не найдено в БД по указанному идентфикатру
+     */
     @Override
     public Ad getAdById(Integer adId) {
         return adRepository.findById(adId).orElseThrow(() -> new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, adId)));
     }
 
+    /**
+     * Проверяет, существует ли в БД объявление с указанным идентификатором
+     * @param adId идентификатор объявления
+     * @return возвращает true, если объявление с указанным идентификатором найдено
+     */
     @Override
     public boolean isAdPresent(Integer adId) {
         return adRepository.existsById(adId);
     }
 
+    /**
+     * Создает новое объявление на основе переданных параметров и сохраняет его в БД
+     * @param createAdDTO объект с полями нового объявления
+     * @param file графический файл с картинкой (фото) объявления
+     * @param authentication объект типа Authentication, текущий авторизованный пользователь, предоставляет фронтенд
+     * @return Возвращает объект класса AdDTO в случае успешного создания нового объявления и сохранения его в БД
+     * @throws IOException - если не удалось сохранить на диске файл с картиной объявления
+     */
     @Override
     public AdDTO addAd(CreateOrUpdateAdDTO createAdDTO, MultipartFile file, Authentication authentication) throws IOException {
         String username = authentication.getName();
@@ -68,6 +87,11 @@ public class AdServiceImpl implements AdService {
         return adMapper.toAdDTO(ad);
     }
 
+    /**
+     * Возвращает список объявлений текущего авторизованного пользователя
+     * @param authentication текущий авторизованный пользователь, предоставляет фронтенд
+     * @return список объявлений в виде объекта AdsDTO
+     */
     @Override
     public AdsDTO getAllAdsByMe(Authentication authentication) {
         String username = authentication.getName();
@@ -75,18 +99,34 @@ public class AdServiceImpl implements AdService {
         return adMapper.toAdsDTO(adList);
     }
 
+    /**
+     * Возвращает список всех объявлений из БД
+     * @return список объявлений в виде объекта AdsDTO
+     */
     @Override
     public AdsDTO getAllAds() {
         List<Ad> adList = adRepository.findAll();
         return adMapper.toAdsDTO(adList);
     }
 
+    /**
+     * Возвращает расширенную информацию для объявления с указанным идентификатором
+     * @param adId идентификатор объявления
+     * @return Расширенную информацию для объявления в виде объекта ExtendedAdDTO
+     */
     @Override
     public ExtendedAdDTO getExtendedAdInfo(Integer adId) {
         Ad ad = getAdById(adId);
         return adMapper.toExtendedAdDTO(ad);
     }
 
+    /**
+     * Удаляет объявление с указанным идентификатором adId.
+     * Дополнительно проводится проверка в соответствии с переданным параметром authentication и ролевой моделью.
+     * Права на удаление объявления есть только у его создателя и администраторов (тех, кто обладает ролью ADMIN).
+     * @param adId идентификатор объявления
+     * @param authentication текущий авторизованный пользователь, предоставляет фронтенд
+     */
     @Override
     @PreAuthorize("hasRole('ADMIN') or @securityService.isOwnerAd(authentication, #adId)")
     public void removeAd(Integer adId, Authentication authentication) {
@@ -94,6 +134,15 @@ public class AdServiceImpl implements AdService {
         adRepository.delete(ad);
     }
 
+    /**
+     * Обновляет существующее объявление в соответствии с заданными параметрами.
+     * Дополнительно проводится проверка в соответствии  с переданным параметром authentication и ролевой моделью.
+     * Права на обновление объявления есть только у его создателя и администраторов (тех, кто обладает ролью ADMIN).
+     * @param adId идентификатор объявления
+     * @param updateAdDTO объект, содержащий параметры объявления, которые можно обновлять, предоставляет фронтенд
+     * @param authentication текущий авторизованный пользователь, предоставляет фронтенд
+     * @return Возвращает объект класса AdDTO в случае успешного обновления объявления и сохранения его в БД
+     */
     @Override
     @PreAuthorize("hasRole('ADMIN') or @securityService.isOwnerAd(authentication, #adId)")
     public AdDTO updateAd(Integer adId, CreateOrUpdateAdDTO updateAdDTO, Authentication authentication) {

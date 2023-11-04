@@ -31,7 +31,7 @@ public class ImageController {
 
     @GetMapping(value = "/avatars/{id}")
     public ResponseEntity<InputStreamResource> getAvatarImage(@PathVariable(name = "id") Integer userId) throws IOException {
-        File file = fileService.getAvatarFileByUSerId(userId);
+        File file = fileService.getAvatarFileByUserId(userId);
         return getResponseEntityForFile(file);
     }
 
