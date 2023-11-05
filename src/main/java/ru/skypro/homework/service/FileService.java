@@ -1,7 +1,9 @@
 package ru.skypro.homework.service;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +25,7 @@ public class FileService {
     private String avatarFilePath;
 
     @Value("${path.to.ad.photo.file.disk}")
-    private String photoFilePath;
+    private String adPhotoFilePath;
 
     private final UserService userService;
     private final AdUserRepository adUserRepository;
@@ -76,7 +78,7 @@ public class FileService {
      */
     public File getPhotoByAd(Ad ad) {
         String photoName = ad.getImage();
-        return getFileByPathAndImageName(this.photoFilePath, photoName);
+        return getFileByPathAndImageName(this.adPhotoFilePath, photoName);
     }
 
     /**
@@ -99,8 +101,9 @@ public class FileService {
      * @param file графический файл с картинкой (фото) объявления
      * @throws IOException - если не удалось сохранить на диске файл с фото объявления
      */
-    public void updateAdPhoto(Ad ad, MultipartFile file) throws IOException {
-        String photoFileName = saveFileToDisk(file, photoFilePath, "photo_" + ad.getAdId());
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isOwnerAd(authentication, #ad.adId)")
+    public void updateAdPhoto(Ad ad, MultipartFile file, Authentication authentication) throws IOException {
+        String photoFileName = saveFileToDisk(file, adPhotoFilePath, "photo_" + ad.getAdId());
         ad.setImage(photoFileName);
         adRepository.save(ad);
     }
@@ -112,7 +115,7 @@ public class FileService {
      * @param dirPath путь к каталогу на диске для сохранения файла
      * @param fileName имя файла, под которым он будет записан на диск
      * @return имя файла, под которым файл был сохранен на диск
-     * @throws IOException - если не удалось сохранить на диске файл
+     * @throws IOException если не удалось сохранить на диске файл
      */
     public String saveFileToDisk(MultipartFile file, String dirPath, String fileName) throws IOException {
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
@@ -124,5 +127,15 @@ public class FileService {
             Files.copy(is, filePath, StandardCopyOption.REPLACE_EXISTING);
         }
         return filePath.getFileName().toString();
+    }
+
+    /**
+     * Удаляет файл с фотографией с именем adPhotoName с жесткого диска
+     * @param adPhotoName имя файла с фотографией объявления
+     * @throws IOException если не удалось удалить файл
+     */
+    public void deleteAdPhoto(String adPhotoName) throws IOException {
+        File adPhotoFile = getFileByPathAndImageName(adPhotoFilePath, adPhotoName);
+        FileUtils.delete(adPhotoFile);
     }
 }

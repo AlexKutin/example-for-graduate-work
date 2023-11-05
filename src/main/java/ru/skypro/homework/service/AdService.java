@@ -21,7 +21,7 @@ public interface AdService {
 
     ExtendedAdDTO getExtendedAdInfo(Integer adId);
 
-    void removeAd(Integer adId, Authentication authentication);
+    void removeAd(Integer adId, Authentication authentication) throws IOException;
 
     AdDTO addAd(CreateOrUpdateAdDTO createAdDTO, MultipartFile multipartFile, Authentication authentication) throws IOException;
 

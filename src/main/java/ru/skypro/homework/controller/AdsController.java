@@ -49,7 +49,7 @@ public class AdsController {
     }
 
     @DeleteMapping("/ads/{id}")
-    public ResponseEntity<Void> removeAd(@PathVariable(name = "id") int id, Authentication authentication) {
+    public ResponseEntity<Void> removeAd(@PathVariable(name = "id") int id, Authentication authentication) throws IOException {
         adService.removeAd(id, authentication);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -71,10 +71,7 @@ public class AdsController {
                                             @RequestPart("image") MultipartFile multipartFile,
                                             Authentication authentication) throws IOException {
         Ad ad = adService.getAdById(adId);
-        if (!authentication.getName().equals(ad.getAuthor().getUsername())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        fileService.updateAdPhoto(ad, multipartFile);
+        fileService.updateAdPhoto(ad, multipartFile, authentication);
         return ResponseEntity.ok().build();
     }
 

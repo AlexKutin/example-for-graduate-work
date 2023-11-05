@@ -129,9 +129,10 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     @PreAuthorize("hasRole('ADMIN') or @securityService.isOwnerAd(authentication, #adId)")
-    public void removeAd(Integer adId, Authentication authentication) {
+    public void removeAd(Integer adId, Authentication authentication) throws IOException {
         Ad ad = getAdById(adId);
         adRepository.delete(ad);
+        fileService.deleteAdPhoto(ad.getImage());
     }
 
     /**
